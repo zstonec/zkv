@@ -1,8 +1,7 @@
 use std::sync::Arc;
 use protocol::pb::commands::{CommandRequest, CommandResponse};
 use protocol::pb::commands::command_request::RequestData;
-use crate::memory::MemTable;
-use crate::{KvError, Storage};
+use crate::{KvError, Storage, MemTable};
 
 mod command_service;
 

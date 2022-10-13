@@ -1,7 +1,6 @@
 use thiserror::Error;
 use crate::pb::commands::CommandResponse;
 
-
 #[derive(Error, Debug)]
 pub enum KvError {
     #[error("Not found for key : {0}")]
@@ -18,6 +17,8 @@ pub enum KvError {
     DecodeError(#[from] prost::DecodeError),
     #[error("I/O error")]
     IoError(#[from] std::io::Error),
+    #[error("sled error")]
+    SledError(#[from] sled::Error),
 }
 
 impl From<KvError> for CommandResponse {

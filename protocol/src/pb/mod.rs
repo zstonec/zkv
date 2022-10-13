@@ -1,6 +1,7 @@
-use crate::pb::commands::{CommandRequest, CommandResponse, Del, Get, Set, value};
+use crate::error::KvError;
+use crate::pb::commands::{CommandRequest, CommandResponse, Value, Del, Get, Set, value};
 use crate::pb::commands::command_request::RequestData;
-use crate::pb::commands::Value;
+use prost::Message;
 
 pub mod commands;
 
@@ -46,6 +47,26 @@ impl From<String> for Value {
         }
     }
 }
+
+
+impl TryFrom<Value> for Vec<u8> {
+    type Error = KvError;
+    fn try_from(v: Value) -> Result<Self, Self::Error> {
+        let mut buf = Vec::with_capacity(v.encoded_len());
+        v.encode(&mut buf)?;
+        Ok(buf)
+    }
+}
+
+impl TryFrom<&[u8]> for Value {
+    type Error = KvError;
+
+    fn try_from(data: &[u8]) -> Result<Self, Self::Error> {
+        let msg = Value::decode(data)?;
+        Ok(msg)
+    }
+}
+
 
 impl From<Value> for CommandResponse {
     fn from(v: Value) -> Self {

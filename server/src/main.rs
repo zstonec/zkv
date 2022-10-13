@@ -1,19 +1,17 @@
-
 use anyhow::Result;
 use tokio::net::{TcpListener, TcpStream};
-use server::{ServerConnection, Service};
-use server::memory::MemTable;
+use server::{MemTable, ServerConnection, Service, SledDb};
 
 #[macro_use]
 extern crate log;
 
 #[tokio::main]
-async fn main() -> Result<()>{
+async fn main() -> Result<()> {
     env_logger::init();
     let addr = "127.0.0.1:8080";
     let listener = TcpListener::bind(addr).await?;
     info!("listener bind to {}", addr);
-    let service = Service::new(MemTable::new());
+    let service = Service::new(SledDb::new("/tmp/sled"));
     loop {
         let (stream, addr) = listener.accept().await?;
         info!("client addr {}", addr);

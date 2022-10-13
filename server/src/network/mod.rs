@@ -4,18 +4,21 @@ use tokio::net::TcpStream;
 use protocol::error::KvError;
 use protocol::network::frame::{FrameCoder, read_frame};
 use protocol::pb::commands::{CommandRequest, CommandResponse};
-use crate::Service;
+use crate::{Service, Storage};
 
 
-pub struct ServerConnection<S> {
-    stream: S,
-    service: Service,
+pub struct ServerConnection<Stream, Store> {
+    stream: Stream,
+    service: Service<Store>,
 }
 
-impl<S> ServerConnection<S> where S: AsyncRead + AsyncWrite + Send + Unpin,
+impl<Stream, Store> ServerConnection<Stream, Store>
+    where
+        Stream: AsyncRead + AsyncWrite + Send + Unpin,
+        Store: Storage
 {
 
-    pub fn new(stream: S, service: Service) -> Self {
+    pub fn new(stream: Stream, service: Service<Store>) -> Self {
         Self {
             stream,
             service
