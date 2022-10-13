@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package commands;
+
+// 来自客户端的命令请求
+message CommandRequest {
+  oneof request_data {
+    Get get = 1;
+    Set set = 2;
+    Del del = 3;
+  }
+}
+
+message Get {
+  string key = 1;
+}
+
+message Set {
+  string key = 1;
+  Value value = 2;
+  optional uint32 ttl = 3;
+}
+
+message Del {
+  repeated string keys = 1;
+}
+
+message CommandResponse {
+  uint32 status = 1;
+  string message = 2;
+  repeated Value values = 3;
+  repeated KvPair pairs = 4;
+}
+
+
+message Value {
+  oneof value {
+    string string = 1;
+    bytes binary = 2;
+    int64 integer = 3;
+    double float = 4;
+    bool bool = 5;
+  }
+}
+
+// 返回的 kvPair
+message KvPair {
+  string key = 1;
+  Value value = 2;
+}
