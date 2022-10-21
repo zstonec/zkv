@@ -18,3 +18,4 @@ dashmap = "5.4.0"
 sled = "0.34.7"
 clap = {version = "4.0.14", features = ["derive"]}
 toml = "0.5.9"
+serde = {version = "1.0.145", features = ["derive"]}

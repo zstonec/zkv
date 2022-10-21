@@ -2,6 +2,7 @@ use anyhow::Result;
 use tokio::net::{TcpListener, TcpStream};
 use server::{MemTable, ServerConnection, Service, SledDb, Storage};
 use clap::Parser;
+use server::config::{ServerConfig, StorageConfig};
 
 #[macro_use]
 extern crate log;
@@ -9,20 +10,8 @@ extern crate log;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    /// port
-    #[arg(short, long, default_value_t = 8080)]
-    port: u32,
-
-    /// storage engine
-    #[arg(short, long, value_enum, default_value_t = StorageEngine::Memory)]
-    storage: StorageEngine,
-}
-
-
-#[derive(clap::ValueEnum, Clone, Debug)]
-enum StorageEngine {
-    Memory,
-    Sled,
+    #[arg(short, long)]
+    config: String,
 }
 
 
@@ -30,11 +19,11 @@ enum StorageEngine {
 async fn main() -> Result<()> {
     env_logger::init();
     let args = Args::parse();
-    let addr = format!("127.0.0.1:{}", args.port);
-    info!("Start listening on {}, storage {:?}", addr, args.storage);
-    match args.storage {
-        StorageEngine::Memory => start_server(&addr, MemTable::new()).await?,
-        StorageEngine::Sled => start_server(&addr, SledDb::new("/tmp/sled")).await?
+    let config = ServerConfig::load(&args.config)?;
+    info!("config: {} {:?}", args.config, config);
+    match config.storage {
+        StorageConfig::MemTable => start_server(&config.general.addr, MemTable::new()).await?,
+        StorageConfig::SledDb(path) => start_server(&config.general.addr, SledDb::new(path)).await?
     }
     Ok(())
 }

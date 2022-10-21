@@ -1,6 +1,7 @@
 pub mod storage;
 pub mod service;
 pub mod network;
+pub mod config;
 
 
 pub use protocol::error::KvError;

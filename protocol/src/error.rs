@@ -19,6 +19,8 @@ pub enum KvError {
     IoError(#[from] std::io::Error),
     #[error("sled error")]
     SledError(#[from] sled::Error),
+    #[error("Parse config error")]
+    ConfigError(#[from] toml::de::Error),
 }
 
 impl From<KvError> for CommandResponse {
